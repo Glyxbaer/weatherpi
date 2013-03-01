@@ -1,4 +1,4 @@
-import ConfigParser, os
+import ConfigParser, os, logging
 from EncryptorWrapper import encryptData
 import urllib, urllib2
 
@@ -7,15 +7,21 @@ class RaspiSubmitter():
 		pass
 
 	def submit(self):
-
 		config = Configer('config/config.cfg') 
 		for jsonfile in getFiles():
 			jsonfile = "data/todo/" + jsonfile
 			filecontent = file_get_contents(jsonfile)
 			data = "apikey=" + config.apikey + "data = " + encryptData(filecontent, "conf/RSA.pub")
 			req = urllib2.Request(config.server, data)
-			response = urllib2.urlopen(req)
-			print response.read()
+			
+
+			try:
+				response = urllib2.urlopen(req)
+				if response.getcode == 401:
+					pass #todo: copyfile
+			except urllib2.URLError, e:
+				logging.error("Could not post data from file '%s' (%s)", jsonfile, str(e))
+
 
 
 
