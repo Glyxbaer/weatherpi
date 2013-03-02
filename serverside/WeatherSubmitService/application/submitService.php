@@ -1,35 +1,6 @@
 <?php
 
 
-/*
- * The 2 different needed json structures:
-*
-* '{"arduino-id": "some-id",
-* 	"date": "2013-02-27",
-*  "type": "continuous",
-*  "data": {
-*		"time": "13:32:54",
-*  	"temperature": 20,
-*      "rainfall": 700,
-*      "wind_direction": "NNO",
-*      "wind_speed": 65,
-*      "air_pressure": 67,
-*      "light_intensity": 120
-*  }
-* }'
-*
-* '{"arduino-id": "some-id",
-* 	"date": "2013-02-27",
-*  "type": "daily",
-*  "data": {
-*  	"sunrise": "06:43:43",
-*      "sunset": "20:23:34",
-*      "sunlight_hours": 11,
-*  }
-* }'
-*
-*/
-
 
 if($_POST["apikey"] && sizeof($_POST["apikey"]) == 20) {
 
@@ -128,7 +99,6 @@ function insertIntoDB($data_object) {
 	$db = mysqli_connect($db_server, $db_user, $db_pw, $db_name);
 
 	$arduino_id = $data_object->{'arduino-id'};
-	$type = $data_object->{'type'};
 	$date = $data_object->{'date'};
 	$weather_data = $data_object->{'data'};
 
