@@ -38,12 +38,15 @@ if($_POST["apikey"] && sizeof($_POST["apikey"]) == 20) {
 
 	if(validateKey($_POST["apikey"])) {
 
+		// Fetch the private RSA-Key from the DB
 		$privateKey = getPrivateKey();
-
-		$message = decryptMessage($privateKey, $_POST["msg"]);
-
+		// Decrypt the sessionKey for the AES-Decryption
+		$sessionKey = decryptSessionKey($privateKey, $_POST["sessionkey"]);
+		// Decrypt the actual message
+		$message = decryptMessage($sessionKey, $_POST["msg"]);
+		// Transform the JSON into a PHP-Object
 		$data = json_decode($message);
-
+		// Insert the Object into the DB
 		insertIntoDB($data);
 
 		returnResponse("200", "Successfully inserted");
@@ -99,14 +102,24 @@ function getPrivateKey() {
 }
 
 
-// Decrypt the message
-function decryptMessage($pk, $msg) {
+// Decrypt the SessionKey (RSA)
+function decryptSessionKey($pk, $data) {
 
 	$rsa = new Crypt_RSA();
 	$rsa->loadKey($pk);
-	$plainMsg = $rsa->decrypt($msg);
+	$plainMsg = $rsa->decrypt($data);
 
 	return $plainMsg;
+}
+
+// Decrypt the message (AES)
+function decryptMessage($key, $data) {
+
+    $decoded = base64_decode($data);
+    $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
+    $decrypted = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $mc_key, trim($decoded), MCRYPT_MODE_ECB, $iv));
+    
+    return $decrypted;
 }
 
 // Insert the data into the DB
@@ -157,10 +170,10 @@ function insertIntoDB($data_object) {
 			if(!$statement->execute()) {
 				die("Query couldn't be executed: ".$db->error);
 			}
-			
+				
 			// get the weather_id of the inserted entry
 			$sql = "SELECT weather_id FROM ".$db_weathertable." WHERE arduino_id=? AND date=? AND location_id=?";
-			
+				
 			$statement = $db->prepare($sql);
 			if(!$statement) {
 				die ("Query couldn't be prepared... ".$db->error);
@@ -170,35 +183,15 @@ function insertIntoDB($data_object) {
 			$row = $result->fetch_assoc();
 			$weather_id = $row["weather_id"];
 		}
-		
+
 		// weather_id has been fetched --> now insert the actual data
-		
-		
-		
+
+
+
 
 	} else {
 		// arduino_id not found --> error
 	}
-
-
-
-
-
-
-
-	$sql = "INSERT INTO ".$db_weathertable." (feld1, feld2, feld3) VALUES(?, ?, ?)";
-
-	$statement = $db->prepare($sql);
-	if(!$statement) {
-		die ("Query couldn't be prepared... ".$db->error);
-	}
-
-	$statement->bind_param("sss", "", "", "");
-	if(!$statement->execute()) {
-		die("Query couldn't be executed: ".$db->error);
-	}
-
-
 
 	mysqli_close($db);
 
