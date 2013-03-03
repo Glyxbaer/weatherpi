@@ -2,19 +2,19 @@
 
 
 
-if($_POST["apikey"] && sizeof($_POST["apikey"]) == 20) {
+if(isset($_GET["apikey"])) {
 
 	include_once("conf/DBconfig.inc.php");
 	include_once("lib/phpseclib/Crypt/RSA.php");
 
-	if(validateKey($_POST["apikey"])) {
+	if(validateKey($_GET["apikey"])) {
 
 		// Fetch the private RSA-Key from the DB
 		$privateKey = getPrivateKey();
 		// Decrypt the sessionKey for the AES-Decryption
-		$sessionKey = decryptSessionKey($privateKey, $_POST["sessionkey"]);
+		$sessionKey = decryptSessionKey($privateKey, $_GET["sessionkey"]);
 		// Decrypt the actual message
-		$message = decryptMessage($sessionKey, $_POST["msg"]);
+		$message = decryptMessage($sessionKey, $_GET["msg"]);
 		// Transform the JSON into a PHP-Object
 		$data = json_decode($message);
 		// Insert the Object into the DB
@@ -86,11 +86,11 @@ function decryptSessionKey($pk, $data) {
 // Decrypt the message (AES)
 function decryptMessage($key, $data) {
 
-    $decoded = base64_decode($data);
-    $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
-    $decrypted = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $mc_key, trim($decoded), MCRYPT_MODE_ECB, $iv));
-    
-    return $decrypted;
+	$decoded = base64_decode($data);
+	$iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
+	$decrypted = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $mc_key, trim($decoded), MCRYPT_MODE_ECB, $iv));
+
+	return $decrypted;
 }
 
 // Insert the data into the DB
@@ -140,10 +140,10 @@ function insertIntoDB($data_object) {
 			if(!$statement->execute()) {
 				die("Query couldn't be executed: ".$db->error);
 			}
-				
+
 			// get the weather_id of the inserted entry
 			$sql = "SELECT weather_id FROM ".$db_weathertable." WHERE arduino_id=? AND date=? AND location_id=?";
-				
+
 			$statement = $db->prepare($sql);
 			if(!$statement) {
 				die ("Query couldn't be prepared... ".$db->error);
@@ -170,7 +170,7 @@ function insertIntoDB($data_object) {
 
 // Forge a custom response
 function returnResponse($statusCode, $message) {
-
+	echo "<p>Statuscode: ".$statusCode."<br>Message: ".$message."</p>";
 }
 
 
