@@ -72,9 +72,8 @@ CREATE TABLE IF NOT EXISTS `qild9_weatherpi_raspi` (
 
 CREATE TABLE IF NOT EXISTS `qild9_weatherpi_weather_data` (
   `weather_id` int(11) NOT NULL AUTO_INCREMENT,
-  `ardunio_id` int(11) NOT NULL,
+  `arduino_id` int(11) NOT NULL,
   `date` date NOT NULL,
-  `saved` datetime NOT NULL,
   `location_id` int(11) NOT NULL,
   PRIMARY KEY (`weather_id`,`ardunio_id`,`date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

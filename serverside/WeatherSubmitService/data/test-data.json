@@ -1,9 +1,6 @@
-
-// Needed json structures:
-
-'{
-	"arduino-id": "some-id",
-	"date": "2013-02-27",
+{
+	"arduino-id": "1",
+	"date": "2013-02-28",
 	"data": {
 		"time": "13:32:54",
 		"temperature": 20,
@@ -13,5 +10,4 @@
 		"air_pressure": 67,
 		"light_intensity": 120
 	}
-}'
-
+}
