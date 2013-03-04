@@ -161,6 +161,7 @@ function getWeatherID($db, $conf, $arduino_id, $date, $location_id) {
 
 // Return a customized HTTP-response
 function returnResponse($statusCode, $message) {
+	http_response_code($statusCode);
 	echo "<p>Statuscode: ".$statusCode."<br>Message: ".$message."</p>";
 	die();
 }

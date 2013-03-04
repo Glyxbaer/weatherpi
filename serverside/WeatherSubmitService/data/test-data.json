@@ -2,12 +2,12 @@
 	"arduino-id": 1,
 	"date": "2013-02-27",
 	"data": {
-		"time": "13:32:54",
-		"temperature": 20,
-		"rainfall": 700,
-		"wind_direction": "NNO",
-		"wind_speed": 65,
-		"air_pressure": 67,
-		"light_intensity": 120
+		"time": "18:32:54",
+		"temperature": 10,
+		"rainfall": 500,
+		"wind_direction": "S",
+		"wind_speed": 25,
+		"air_pressure": 87,
+		"light_intensity": 60
 	}
 }
