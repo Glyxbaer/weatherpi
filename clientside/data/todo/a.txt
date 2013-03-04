@@ -1,1 +1,13 @@
-hallo
+{"arduino-id": 1,
+  "type": "continuous",
+  "data": {
+       "time": "13:32:54",
+      "temperature": 20,
+      "rainfall": 700,
+      "wind_direction": "NNO",
+      "wind_speed": 65,
+      "air_pressure": 67,
+      "light_intensity": 120
+  }
+}
+
