@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build" default="" basedir=".">
+	<description>
+		Synchronize Eclipse with the webserver
+    </description>
+	<!-- Relative location of eclipse folder -->
+	<property name="eclipse" value="." />
+	<!-- Absolute location of web server folder -->
+	<property name="website" value="C:/xampp/htdocs/WeatherSubmitService/" />
+
+	<!-- Copy new files from workspace to the webserver -->
+	<copy todir="${website}">
+		<fileset file="${eclipse}/submitService.php" />
+	</copy>
+	<copy todir="${website}/lib">
+		<fileset dir="${eclipse}/lib" />
+	</copy>
+	<copy todir="${website}/data">
+		<fileset dir="${eclipse}/data" />
+	</copy>
+</project>
