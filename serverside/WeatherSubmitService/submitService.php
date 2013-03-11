@@ -1,21 +1,21 @@
 <?php
 
 
-if(isset($_GET["apikey"]) && isset($_GET["sessionkey"]) && isset($_GET["msg"]) && isset($_GET["iv"])) {
+if(isset($_POST["apikey"]) && isset($_POST["sessionkey"]) && isset($_POST["msg"]) && isset($_POST["iv"])) {
 
 	include_once("lib/phpseclib/Crypt/RSA.php");
 	include_once("conf/WeatherDBConfig.php");
 	$conf = new WeatherDBConfig();
 
 	// Fetch the private RSA-Key from the DB
-	$privateKey = getPrivateKey($conf, $_GET["apikey"]);
+	$privateKey = getPrivateKey($conf, $_POST["apikey"]);
 
 	// Check if a key was found (apikey valid)
 	if($privateKey) {
 		// Decrypt the sessionKey for the AES-Decryption
-		//$sessionKey = decryptSessionKey($privateKey, $_GET["sessionkey"]);
+		//$sessionKey = decryptSessionKey($privateKey, $_POST["sessionkey"]);
 		// Decrypt the actual message
-		//$message = decryptMessage($sessionKey, $_GET["msg"], $_GET["iv"]);
+		//$message = decryptMessage($sessionKey, $_POST["msg"], $_POST["iv"]);
 		$message = file_get_contents("data/test-data.json");
 		// Transform the JSON into a PHP-Object
 		$data = json_decode($message);
@@ -162,7 +162,7 @@ function getWeatherID($db, $conf, $arduino_id, $date, $location_id) {
 // Return a customized HTTP-response
 function returnResponse($statusCode, $message) {
 	http_response_code($statusCode);
-	echo "<p>Statuscode: ".$statusCode."<br>Message: ".$message."</p>";
+	echo "{status-code: ".$statusCode.", message: \"".$message."\"}";
 	die();
 }
 
