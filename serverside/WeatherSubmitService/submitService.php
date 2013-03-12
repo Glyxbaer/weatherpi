@@ -3,6 +3,7 @@
 
 if(isset($_POST["apikey"]) && isset($_POST["sessionkey"]) && isset($_POST["msg"]) && isset($_POST["iv"])) {
 
+	set_include_path(get_include_path() . PATH_SEPARATOR . "lib/phpseclib");
 	include_once("lib/phpseclib/Crypt/RSA.php");
 	include_once("conf/WeatherDBConfig.php");
 	$conf = new WeatherDBConfig();
@@ -13,10 +14,10 @@ if(isset($_POST["apikey"]) && isset($_POST["sessionkey"]) && isset($_POST["msg"]
 	// Check if a key was found (apikey valid)
 	if($privateKey) {
 		// Decrypt the sessionKey for the AES-Decryption
-		//$sessionKey = decryptSessionKey($privateKey, $_POST["sessionkey"]);
+		$sessionKey = decryptSessionKey($privateKey, $_POST["sessionkey"]);
 		// Decrypt the actual message
-		//$message = decryptMessage($sessionKey, $_POST["msg"], $_POST["iv"]);
-		$message = file_get_contents("data/test-data.json");
+		$message = decryptMessage($sessionKey, $_POST["msg"], $_POST["iv"]);
+		//$message = file_get_contents("data/test-data.json");
 		// Transform the JSON into a PHP-Object
 		$data = json_decode($message);
 		// Insert the Object into the DB
