@@ -48,7 +48,8 @@ function getPrivateKey($conf, $apikey) {
 		returnResponse("503", $db->error);
 	$statement->bind_param("s", $apikey);
 	$statement->execute();
-	$privateKey = $statement->get_result()->fetch_assoc()["private_key"];
+	$statement->bind_result($privateKey);
+	$statement->fetch();
 	$statement->close();
 	mysqli_close($db);
 
@@ -89,7 +90,8 @@ function insertIntoDB($conf, $data_object) {
 		returnResponse("503", $db->error);
 	$statement->bind_param("i", $arduino_id);
 	$statement->execute();
-	$location_id = $statement->get_result()->fetch_assoc()["location_id"];
+	$statement->bind_result($location_id);
+	$statement->fetch();
 	$statement->close();
 
 	if($location_id) {
@@ -152,7 +154,8 @@ function getWeatherID($db, $conf, $arduino_id, $date, $location_id) {
 		returnResponse("503", $db->error);
 	$statement->bind_param("isi", $arduino_id, $date, $location_id);
 	$statement->execute();
-	$weather_id = $statement->get_result()->fetch_assoc()["weather_id"];
+	$statement->bind_result($weather_id);
+	$statement->fetch();
 	$statement->close();
 
 	return $weather_id;
