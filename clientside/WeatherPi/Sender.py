@@ -18,16 +18,18 @@ class RaspiSubmitter():
 			# This date is saved in the filename
 			json_data = retrieveJsonAsTextAndAddTime("data/todo/" + weatherfile)
 			
-			#Dump the dict as a string in json format
+			# Dump the dict as a string in json format
 			filecontent = json.dumps(json_data)
 			
-			#prepare the payload for the POST request and send it
+			# prepare the payload for the POST request and send it
 			data={'apikey':config.apikey,'iv': iv ,'sessionkey': encryptData(sessionkey, config.pubKeyPath), 'msg':encryptDataAES(filecontent, sessionkey, iv)}
 			req = urllib2.Request(config.server, urllib.urlencode(data))
 			
 			try:
 				response = urllib2.urlopen(req)
-				if response.getcode == 401:
+				print response.read()
+				if response.getcode() == 401:
+					
 					pass #todo: copyfile
 
 			except urllib2.URLError, e:
@@ -56,7 +58,10 @@ def retrieveJsonAsTextAndAddTime(jsonFileName):
 		js = open(jsonFileName)
 		json_data = json.load(js)
 		js.close()
+		datestring = jsonFileName.split('/')[-1].split('.')[0].split(' ')
 
-		json_data['date']= jsonFileName.split('/')[-1].split('.')[0]
+		json_data['date']= datestring[0]
+		json_data['data']['time']= datestring[1][0:2] + ":" + datestring[1][2:4] + ":" + datestring[1][4:6]
+
 		
 		return json_data
