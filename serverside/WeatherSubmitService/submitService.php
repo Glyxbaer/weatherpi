@@ -116,12 +116,12 @@ function insertIntoDB($conf, $data_object) {
 
 		// weather_id has been fetched --> now insert the actual data
 		$sql = "INSERT IGNORE INTO ".$conf->db_weathertable_continuous." (weather_id, time, saved, temperature, "
-				."rainfall, wind_direction, wind_speed, air_pressure, light_intensity) VALUES(?, ?, NOW(), ?, ?, ?, ?, ?, ?)";
+				."rainfall, wind_direction, wind_speed, air_pressure, light_intensity, humidity) VALUES(?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)";
 
 		$statement = $db->prepare($sql);
 		if(!$statement)
 			returnResponse("503", $db->error);
-		$statement->bind_param("isdisdid",
+		$statement->bind_param("isddsdiid",
 				$weather_id,
 				$weather_data->{'time'},
 				$weather_data->{'temperature'},
@@ -129,7 +129,8 @@ function insertIntoDB($conf, $data_object) {
 				$weather_data->{'wind_direction'},
 				$weather_data->{'wind_speed'},
 				$weather_data->{'air_pressure'},
-				$weather_data->{'light_intensity'}
+				$weather_data->{'light_intensity'},
+				$weather_data->{'humidity'}
 		);
 
 		if(!$statement->execute())
