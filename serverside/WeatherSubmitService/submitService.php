@@ -2,9 +2,7 @@
 
 
 if(isset($_POST["apikey"]) && isset($_POST["sessionkey"]) && isset($_POST["msg"]) && isset($_POST["iv"])) {
-
-	set_include_path(get_include_path() . PATH_SEPARATOR . "lib/phpseclib");
-	include_once("lib/phpseclib/Crypt/RSA.php");
+	include_once("functions.php");
 	include_once("conf/WeatherDBConfig.php");
 	$conf = new WeatherDBConfig();
 
@@ -17,7 +15,7 @@ if(isset($_POST["apikey"]) && isset($_POST["sessionkey"]) && isset($_POST["msg"]
 		$sessionKey = decryptSessionKey($privateKey, $_POST["sessionkey"]);
 		// Decrypt the actual message
 		$message = decryptMessage($sessionKey, $_POST["msg"], $_POST["iv"]);
-		//$message = file_get_contents("data/test-data.json");
+		// $message = file_get_contents("data/test-data.json");
 		// Transform the JSON into a PHP-Object
 		$data = json_decode($message);
 		// Insert the Object into the DB
@@ -25,53 +23,14 @@ if(isset($_POST["apikey"]) && isset($_POST["sessionkey"]) && isset($_POST["msg"]
 
 		returnResponse("200", "Successfully inserted");
 
-
 	} else {
 		returnResponse("403", "API-key not valid");
 	}
-
 
 } else {
 	returnResponse("401", "Required parameters missing");
 }
 
-
-// Fetch the private key corresponding to apikey from database
-function getPrivateKey($conf, $apikey) {
-
-	$db = mysqli_connect($conf->db_server, $conf->db_user, $conf->db_pw, $conf->db_name);
-	if(!$db)
-		returnResponse("503", $db->error);
-
-	$sql = "SELECT private_key FROM ".$conf->db_keytable." WHERE api_key=?";
-	$statement = $db->prepare($sql);
-	if(!$statement)
-		returnResponse("503", $db->error);
-	$statement->bind_param("s", $apikey);
-	$statement->execute();
-	$statement->bind_result($privateKey);
-	$statement->fetch();
-	$statement->close();
-	mysqli_close($db);
-
-	return $privateKey;
-}
-
-
-// Decrypt the SessionKey (RSA)
-function decryptSessionKey($pk, $data) {
-
-	$rsa = new Crypt_RSA();
-	$rsa->loadKey($pk, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
-	$plainSessionKey = $rsa->decrypt($data);
-
-	return $plainSessionKey;
-}
-
-// Decrypt the message (AES)
-function decryptMessage($key, $data, $iv) {
-	return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CFB, $iv));
-}
 
 // Insert the data into the DB
 function insertIntoDB($conf, $data_object) {
@@ -137,32 +96,12 @@ function insertIntoDB($conf, $data_object) {
 			returnResponse("503", $db->error);
 		$statement->close();
 
-
 	} else {
 		// arduino_id not found --> error
 		returnResponse("503", "ArduinoID not found");
 	}
-
 	mysqli_close($db);
-
 }
-
-
-function getWeatherID($db, $conf, $arduino_id, $date, $location_id) {
-
-	$sql = "SELECT weather_id FROM ".$conf->db_weathertable." WHERE arduino_id=? AND date=? AND location_id=?";
-	$statement = $db->prepare($sql);
-	if(!$statement)
-		returnResponse("503", $db->error);
-	$statement->bind_param("isi", $arduino_id, $date, $location_id);
-	$statement->execute();
-	$statement->bind_result($weather_id);
-	$statement->fetch();
-	$statement->close();
-
-	return $weather_id;
-}
-
 
 // Return a customized HTTP-response
 function returnResponse($statusCode, $message) {
@@ -171,7 +110,6 @@ function returnResponse($statusCode, $message) {
 	echo "{status-code: ".$statusCode.", message: \"".$message."\"}";
 	die();
 }
-
 
 
 ?>
