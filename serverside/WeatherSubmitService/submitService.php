@@ -1,20 +1,23 @@
 <?php
 
 
-if(isset($_POST["apikey"]) && isset($_POST["sessionkey"]) && isset($_POST["msg"]) && isset($_POST["iv"])) {
+$post = getRealPOST();
+
+
+if(isset($post["apikey"]) && isset($post["sessionkey"]) && isset($post["msg"]) && isset($post["iv"])) {
 	include_once("functions.php");
 	include_once("conf/WeatherDBConfig.php");
 	$conf = new WeatherDBConfig();
 
 	// Fetch the private RSA-Key from the DB
-	$privateKey = getPrivateKey($conf, $_POST["apikey"]);
+	$privateKey = getPrivateKey($conf, $post["apikey"]);
 
 	// Check if a key was found (apikey valid)
 	if($privateKey) {
 		// Decrypt the sessionKey for the AES-Decryption
-		$sessionKey = decryptSessionKey($privateKey, $_POST["sessionkey"]);
+		$sessionKey = decryptSessionKey($privateKey, $post["sessionkey"]);
 		// Decrypt the actual message
-		$message = decryptMessage($sessionKey, $_POST["msg"], $_POST["iv"]);
+		$message = decryptMessage($sessionKey, $post["msg"], $post["iv"]);
 		// $message = file_get_contents("data/test-data.json");
 		// Transform the JSON into a PHP-Object
 		$data = json_decode($message);
@@ -109,6 +112,20 @@ function returnResponse($statusCode, $message) {
 	header("X-PHP-Response-Code: ".$statusCode, true, $statusCode);
 	echo "{status-code: ".$statusCode.", message: \"".$message."\"}";
 	die();
+}
+
+
+// Workaround function to fix up PHP's messing up POST input containing dots, etc.
+function getRealPOST() {
+	$pairs = explode("&", file_get_contents("php://input"));
+	$vars = array();
+	foreach ($pairs as $pair) {
+		$nv = explode("=", $pair);
+		$name = urldecode($nv[0]);
+		$value = urldecode($nv[1]);
+		$vars[$name] = $value;
+	}
+	return $vars;
 }
 
 

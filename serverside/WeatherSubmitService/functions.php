@@ -73,7 +73,7 @@ function getWeatherID($db, $conf, $arduino_id, $date, $location_id) {
 
 // Decrypt the SessionKey (RSA)
 function decryptSessionKey($pk, $data) {
-	openssl_private_decrypt($data, $plainSessionKey, openssl_pkey_get_private($pk));
+	openssl_private_decrypt($data, $plainSessionKey, openssl_pkey_get_private($pk), OPENSSL_PKCS1_OAEP_PADDING);
 	openssl_free_key(openssl_pkey_get_private($pk));
 	return $plainSessionKey;
 }
