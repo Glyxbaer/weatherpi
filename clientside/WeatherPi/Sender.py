@@ -1,6 +1,6 @@
 import ConfigParser, os, logging
 from EncryptorWrapper import encryptData, decryptData, getSessionkey,encryptDataAES
-import urllib, urllib2, sys, json
+import urllib, urllib2, sys, json, base64
 
 class RaspiSubmitter():
 	def getData(self):
@@ -10,8 +10,10 @@ class RaspiSubmitter():
 		config = Configer('config/config.cfg') 
 		for weatherfile in getFiles():
 			
+			
 			# Create sessionkey and initialization value for AES decryption
 			sessionkey = getSessionkey()
+			
 			iv= os.urandom(16)
 			
 			# Retrieve a dictionary from the file which contains the according data in json format and add a field which contains the date. 
@@ -20,18 +22,22 @@ class RaspiSubmitter():
 			
 			# Dump the dict as a string in json format
 			filecontent = json.dumps(json_data)
-			
+			print filecontent
 			# prepare the payload for the POST request and send it
 			data={'apikey':config.apikey,'iv': iv ,'sessionkey': encryptData(sessionkey, config.pubKeyPath), 'msg':encryptDataAES(filecontent, sessionkey, iv)}
 			req = urllib2.Request(config.server, urllib.urlencode(data))
 			
 			try:
+				
 				response = urllib2.urlopen(req)
-				print response.read()
-				if response.getcode() == 401:
-					
-					pass #todo: copyfile
 
+                #todo: handle request codes
+				if response.getcode() == 401:
+					print "401"
+					 #todo: movefile
+				elif response.getcode() == 200:
+					os.rename('data/todo/' + weatherfile, 'data/done/'+weatherfile.split('/')[-1])
+					logging.info('Data has successfuly been submitted to the server:' + weatherfile)
 			except urllib2.URLError, e:
 				logging.error("Could not post data from file '%s' (%s)", weatherfile, str(e))
 				exit(1)
