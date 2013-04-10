@@ -3,11 +3,12 @@
 	"date": "2013-02-27",
 	"data": {
 		"time": "18:32:54",
-		"temperature": 10,
+		"temperature": 10.2,
 		"rainfall": 500,
 		"wind_direction": "S",
 		"wind_speed": 25,
 		"air_pressure": 87,
-		"light_intensity": 60
+		"light_intensity": 60,
+		"humidity": 0.4
 	}
 }
