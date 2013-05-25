@@ -65,6 +65,22 @@ function getWeatherID($db, $conf, $arduino_id, $date, $location_id) {
 	return $weather_id;
 }
 
+// Check if the ArduinoID and the RaspberryPi key correspond
+function validateArduinoID($db, $conf, $arduino_id, $apikey) {
+
+	$sql = "SELECT t1.arduino_id FROM ".$conf->db_arduinotable." AS t1, ".$conf->db_keytable ." AS t2 WHERE t2.api_key=? AND t1.raspi_id=t2.raspi_id";
+	$statement = $db->prepare($sql);
+	if(!$statement)
+		returnResponse("503", $db->error);
+	$statement->bind_param("s", $apikey);
+	$statement->execute();
+	$statement->bind_result($id);
+	$statement->fetch();
+	$statement->close();
+
+	return $id==$arduino_id;
+}
+
 /* END DATABASE FUNCTIONS */
 
 
