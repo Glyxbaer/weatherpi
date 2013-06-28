@@ -1,0 +1,14 @@
+{
+"arduino-id": 1,
+"date": "2013-05-22",
+"data": {
+    "time": "17:46:29",
+    "temperature": 24.77,
+    "humidity": 0.00,
+    "rainfall": 0.0,
+    "wind_direction": "SE",
+    "wind_speed": 58.4,
+    "air_pressure": 98128,
+    "light_intensity": 0
+    }
+}

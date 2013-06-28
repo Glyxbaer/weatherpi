@@ -8,9 +8,10 @@ class RaspiSubmitter():
 
 	def submit(self):
 		config = Configer('config/config.cfg') 
+		
+
 		for weatherfile in getFiles():
-			
-			
+						
 			# Create sessionkey and initialization value for AES decryption
 			sessionkey = getSessionkey()
 			
@@ -22,7 +23,7 @@ class RaspiSubmitter():
 			
 			# Dump the dict as a string in json format
 			filecontent = json.dumps(json_data)
-			print filecontent
+			
 			# prepare the payload for the POST request and send it
 			data={'apikey':config.apikey,'iv': iv ,'sessionkey': encryptData(sessionkey, config.pubKeyPath), 'msg':encryptDataAES(filecontent, sessionkey, iv)}
 			req = urllib2.Request(config.server, urllib.urlencode(data))
@@ -31,7 +32,7 @@ class RaspiSubmitter():
 				
 				response = urllib2.urlopen(req)
 
-                #todo: handle request codes
+				#todo: handle request codes
 				if response.getcode() == 401:
 					print "401"
 					 #todo: movefile

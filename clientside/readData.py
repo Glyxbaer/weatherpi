@@ -6,10 +6,11 @@ import time
 
 DEVICE = '/dev/ttyAMA0'
 BAUD = 9600
+INTERVAL = 3
 
 class Communicator():
     def __init__(self):
-        self._dir = "./data/todo/"
+        self._dir = "data/todo"
         self._format = "{" \
                        "\n\"arduino-id\": %s," \
                        "\n\"date\": \"%s\"," \
@@ -26,8 +27,12 @@ class Communicator():
                        "\n}"
 
     def _readData(self):
-        connection = serial.Serial(3)
+        connection = serial.Serial()
+        connection.port = 0
+        connection.baud = BAUD
         connection.timeout = None
+        connection.open()
+        connection.setDTR(False)
         time.sleep(3)
         print("Benutze Port: " + connection.portstr)
 
@@ -51,7 +56,7 @@ class Communicator():
         data = json.split(';')
         date = now.strftime("%Y-%m-%d")
         time = now.strftime("%H:%M:%S")
-        return self._format%(data[0], date, time, data[1], data[2], 0, data[4], 0, data[6], 0)
+        return self._format%(data[0], date, time, data[1], data[2], data[3], data[4], data[5], data[6], data[7])
 
 
 print("Beginne das lesen")
@@ -59,4 +64,4 @@ com = Communicator()
 i = 0
 while i < 10:
     com._readData()
-    time.sleep(120)
+    time.sleep(INTERVAL)
