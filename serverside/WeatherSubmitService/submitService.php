@@ -46,6 +46,11 @@ function insertIntoDB($conf, $data_object) {
 	$date = $data_object->{'date'};
 	$weather_data = $data_object->{'data'};
 
+	// Check if the ArduinoID and the RaspberryPi key correspond
+	if(!validateArduinoID($db, $conf, $arduino_id, $post["apikey"]))
+		returnResponse("200", "Arduino-ID and Raspberry Pi API-key do not match.");
+
+
 	// Get the current location of the arduino
 	$sql = "SELECT location_id FROM ".$conf->db_arduinotable." WHERE arduino_id=?";
 	$statement = $db->prepare($sql);
